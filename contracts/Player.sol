@@ -35,6 +35,10 @@ contract Player is Ownable {
         inGame = true;
     }
 
+    function markNotInGame() public onlyOwner {
+        inGame = false;
+    }
+
     function makeWinBet(uint256 amount) public {
         // check if player is in game
         require(inGame, "You can't make a bet while player is ingame");
@@ -89,13 +93,9 @@ contract Player is Ownable {
 
     function returnAllBets() public onlyOwner {
         for (uint256 i = 0; i < winBets.length; i++) {
-            // uint256 payout;
-            // payout = (bets[i].amount / winBets) * loseBets;
             IERC20(token).transfer(winBets[i].sender, winBets[i].amount);
         }
         for (uint256 i = 0; i < loseBets.length; i++) {
-            // uint256 payout;
-            // payout = (bets[i].amount / winBets) * loseBets;
             IERC20(token).transfer(loseBets[i].sender, loseBets[i].amount);
         }
     }
