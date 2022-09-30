@@ -12,7 +12,7 @@ contract Game {
     // pot     = uint256 <- contract.balance in DAI
     // bluePot = uint256 <- sum(betsBlue."ammount")
     // redPot  = uint256 <- sum(bestRed."ammount")
-    // 
+    //
     // admins = array[] <- admin wallets
     // constructor (
     //      bluePlayers: [5 contracts],
@@ -29,5 +29,5 @@ contract Game {
     //      pot = msg.value
     //      }
 
-    constructor()
+    constructor() {}
 }

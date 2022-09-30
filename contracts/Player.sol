@@ -16,20 +16,20 @@ contract Player is Ownable {
     Bet[] public winBets;
     Bet[] public loseBets;
 
-    uint256 basePot;
-    uint256 winPot;
-    uint256 losePot;
+    uint256 basePot = 0;
+    uint256 winPot = 0;
+    uint256 losePot = 0;
 
     bool inGame = false;
 
     error TransferFailed();
 
-    constructor() {
-        basePot = 0;
-        winPot = 0;
-        losePot = 0;
-        inGame = false;
-    }
+    // constructor() {
+    //     basePot = 0;
+    //     winPot = 0;
+    //     losePot = 0;
+    //     inGame = false;
+    // }
 
     function markInGame() public onlyOwner {
         inGame = true;
