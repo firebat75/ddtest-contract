@@ -16,18 +16,18 @@ contract Player is Ownable {
     Bet[] public winBets;
     Bet[] public loseBets;
 
-    uint256 pot;
+    uint256 basePot;
     uint256 winPot;
-    uint256 lostPot;
+    uint256 losePot;
 
     bool inGame = false;
 
     error TransferFailed();
 
     constructor() {
-        pot = 0;
+        basePot = 0;
         winPot = 0;
-        lostPot = 0;
+        losePot = 0;
         inGame = false;
     }
 
@@ -39,13 +39,13 @@ contract Player is Ownable {
         inGame = false;
     }
 
-    function makeWinBet(uint256 amount) public {
+    function makeWinBet(uint256 amount, address token) public {
         // check if player is in game
         require(inGame, "You can't make a bet while player is ingame");
 
         bool transfer = IERC20(token).transferFrom(
             msg.sender,
-            address.this,
+            address(this),
             amount
         );
         if (!transfer) revert TransferFailed();
@@ -53,45 +53,45 @@ contract Player is Ownable {
         // add bet to bets array, increase value of pots
         winBets.push(Bet(msg.sender, amount));
         winPot.add(amount);
-        pot.add(amount);
     }
 
-    function makeLoseBet(uint256 amount) public {
+    function makeLoseBet(uint256 amount, address token) public {
         // check if player is in game
         require(inGame, "You can't make a bet while player is ingame");
 
         bool transfer = IERC20(token).transferFrom(
             msg.sender,
-            address.this,
+            address(this),
             amount
         );
         if (!transfer) revert TransferFailed();
 
         // add bet to bets array, increase value of pots
         loseBets.push(Bet(msg.sender, amount));
-        lostPot.add(amount);
-        pot.add(amount);
+        losePot.add(amount);
     }
 
-    function payoutWin() public onlyOwner {
+    function payoutWin(address token) public onlyOwner {
         for (uint256 i = 0; i < winBets.length; i++) {
             uint256 payout;
-            payout = (winBets[i].amount.div(winBets)).mul(loseBets);
+            payout = ((winBets[i].amount).mul(winBets[i].amount.div(winPot)))
+                .mul(losePot + basePot);
             IERC20(token).transfer(winBets[i].sender, payout);
         }
         inGame = false;
     }
 
-    function payoutWin() public onlyOwner {
+    function payoutLose(address token) public onlyOwner {
         for (uint256 i = 0; i < loseBets.length; i++) {
             uint256 payout;
-            payout = (loseBets[i].amount.div(loseBets)).mul(winBets);
+            payout = ((loseBets[i].amount).mul(loseBets[i].amount.div(losePot)))
+                .mul(winPot + basePot);
             IERC20(token).transfer(loseBets[i].sender, payout);
         }
         inGame = false;
     }
 
-    function returnAllBets() public onlyOwner {
+    function returnAllBets(address token) public onlyOwner {
         for (uint256 i = 0; i < winBets.length; i++) {
             IERC20(token).transfer(winBets[i].sender, winBets[i].amount);
         }
