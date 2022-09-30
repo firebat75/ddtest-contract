@@ -39,6 +39,17 @@ contract Player is Ownable {
         inGame = false;
     }
 
+    function addPot(uint256 amount, address token) public {
+        bool transfer = IERC20(token).transferFrom(
+            msg.sender,
+            address(this),
+            amount
+        );
+        if (!transfer) revert TransferFailed();
+
+        basePot.add(amount);
+    }
+
     function makeWinBet(uint256 amount, address token) public {
         // check if player is in game
         require(inGame, "You can't make a bet while player is ingame");
@@ -98,5 +109,7 @@ contract Player is Ownable {
         for (uint256 i = 0; i < loseBets.length; i++) {
             IERC20(token).transfer(loseBets[i].sender, loseBets[i].amount);
         }
+
+        IERC20(token).transfer(msg.sender, basePot);
     }
 }
