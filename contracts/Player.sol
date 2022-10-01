@@ -16,20 +16,20 @@ contract Player is Ownable {
     Bet[] public winBets;
     Bet[] public loseBets;
 
-    uint256 basePot = 0;
-    uint256 winPot = 0;
-    uint256 losePot = 0;
+    uint256 public basePot;
+    uint256 public winPot;
+    uint256 public losePot;
 
-    bool inGame = false;
+    bool public inGame;
 
     error TransferFailed();
 
-    // constructor() {
-    //     basePot = 0;
-    //     winPot = 0;
-    //     losePot = 0;
-    //     inGame = false;
-    // }
+    constructor() {
+        basePot = 0;
+        winPot = 0;
+        losePot = 0;
+        inGame = false;
+    }
 
     function markInGame() public onlyOwner {
         inGame = true;
@@ -37,6 +37,10 @@ contract Player is Ownable {
 
     function markNotInGame() public onlyOwner {
         inGame = false;
+    }
+
+    function approve(uint256 amount, address token) public {
+        IERC20(token).approve(address(this), amount);
     }
 
     function addPot(uint256 amount, address token) public {
